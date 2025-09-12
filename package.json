@@ -3,5 +3,28 @@
     "@whiskeysockets/baileys": "^6.7.19",
     "pino": "^9.9.1",
     "qrcode-terminal": "^0.12.0"
-  }
+  },
+  "scripts": {
+    "make-command": "node make-command.js",
+    "auth": "node auth.js",
+    "auth:pairing": "node auth.js pairing"
+  },
+  "name": "singularity.js",
+  "version": "1.0.0",
+  "description": "help you for whatsapp bot",
+  "main": "singularity.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ezaco-dev/Singularity.js.git"
+  },
+  "keywords": [
+    "whatsapp-bot"
+  ],
+  "author": "ezaco-dev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ezaco-dev/Singularity.js/issues"
+  },
+  "homepage": "https://github.com/ezaco-dev/Singularity.js#readme"
 }

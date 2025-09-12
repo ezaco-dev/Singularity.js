@@ -25,7 +25,7 @@ function makeSingle() {
 module.exports = {
   command: "${name}",
   args: false,
-  run: () => {
+  run: (args, msg, sock, sender, reply, taged) => {
     return Text("ini balasan default untuk ${name}");
   }
 };`;
@@ -44,7 +44,7 @@ function makeMulti(words) {
 module.exports = {
   command: "${name}",
   args: true,
-  run: ({ args }) => {
+  run: (args, msg, sock, sender, reply, taged) => {
     ${assigns.join("\n    ")}
     if (args.length < ${words}) return Text("⚠️ Harus ada minimal ${words} kata setelah ${name}");
     return Text(\`Kamu kirim: ${vars.map(v => `\${${v}}`).join(" ")}\`);
