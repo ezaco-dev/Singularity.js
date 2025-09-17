@@ -3,130 +3,62 @@ const fs = require("fs");
 const path = require("path");
 
 /**
- * Kirim teks biasa
+ * Basic text helper (lowercase)
+ * @param {string} content
+ * @param {object} extra - extra fields, mis. { mentions: [...] }
+ * @returns {object} message object sesuai Baileys
  */
-function Text(text) {
-  return {
-   text
-  };
+function text(content, extra = {}) {
+  return { text: String(content), ...extra };
 }
+// Alias untuk kompatibilitas (beberapa template pakai Text())
+const Text = text;
 
 /**
- * Kirim gambar
- * @param {Buffer|string} data - bisa buffer, path file, atau URL
- * @param {string} caption
+ * Helper file loader (buffer / path / url)
  */
-function Image(data, caption = "") {
-  return {
-    image: getFile(data),
-    caption,
-  };
+function getFile(data) {
+  if (!data) throw new Error("No file data");
+  if (Buffer.isBuffer(data)) return data;
+  if (typeof data === "string" && fs.existsSync(data)) {
+    return fs.readFileSync(path.resolve(data));
+  }
+  if (typeof data === "string" && data.startsWith("http")) {
+    return { url: data };
+  }
+  throw new Error("Format file tidak valid (harus buffer, path, atau url)");
 }
 
-/**
- * Kirim video
- * @param {Buffer|string} data - bisa buffer, path file, atau URL
- * @param {string} caption
- */
-function Video(data, caption = "") {
-  return {
-    video: getFile(data),
-    caption,
-  };
+/** Media helpers */
+function Image(data, caption = "", extra = {}) {
+  return { image: getFile(data), caption, ...extra };
 }
-
-/**
- * Kirim audio / voice note
- * @param {Buffer|string} data
- * @param {boolean} ptt - true kalau mau jadi voice note
- */
-function Audio(data, ptt = false) {
-  return {
-    audio: getFile(data),
-    mimetype: "audio/mpeg",
-    ptt,
-  };
+function Video(data, caption = "", extra = {}) {
+  return { video: getFile(data), caption, ...extra };
 }
-
-/**
- * Kirim sticker (webp)
- * @param {Buffer|string} data
- */
-function Sticker(data) {
-  return {
-    sticker: getFile(data),
-  };
+function Audio(data, ptt = false, extra = {}) {
+  return { audio: getFile(data), ptt, ...extra };
 }
-
-/**
- * Kirim dokumen
- * @param {Buffer|string} data
- * @param {string} fileName
- * @param {string} mimetype
- */
-function Document(data, fileName = "file.txt", mimetype = "application/pdf") {
-  return {
-    document: getFile(data),
-    fileName,
-    mimetype,
-  };
+function Sticker(data, extra = {}) {
+  return { sticker: getFile(data), ...extra };
 }
-
-/**
- * Kirim lokasi
- * @param {number} lat
- * @param {number} lng
- * @param {string} name
- * @param {string} address
- */
+function Document(data, fileName = "file.bin", mimetype = "application/octet-stream", extra = {}) {
+  return { document: getFile(data), fileName, mimetype, ...extra };
+}
 function Location(lat, lng, name = "", address = "") {
-  return {
-    location: { degreesLatitude: lat, degreesLongitude: lng },
-    name,
-    address,
-  };
+  return { location: { degreesLatitude: lat, degreesLongitude: lng }, name, address };
 }
-
-/**
- * Kirim kontak / vCard
- * @param {string} phone
- * @param {string} name
- */
 function Contact(phone, name = "Kontak") {
   const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:${name}
 TEL;type=CELL;type=VOICE;waid=${phone}:${phone}
 END:VCARD`;
-
-  return {
-    contacts: {
-      displayName: name,
-      contacts: [{ vcard }],
-    },
-  };
-}
-
-/**
- * Helper: otomatis parse input (buffer / path / url string)
- */
-function getFile(data) {
-  if (Buffer.isBuffer(data)) return data;
-
-  // kalau input path file
-  if (typeof data === "string" && fs.existsSync(data)) {
-    return fs.readFileSync(path.resolve(data));
-  }
-
-  // kalau input string URL, biarkan Baileys fetch sendiri
-  if (typeof data === "string" && data.startsWith("http")) {
-    return { url: data };
-  }
-
-  throw new Error("Format file tidak valid (harus buffer, path, atau url)");
+  return { contacts: { displayName: name, contacts: [{ vcard }] } };
 }
 
 module.exports = {
+  text,
   Text,
   Image,
   Video,
@@ -135,4 +67,5 @@ module.exports = {
   Document,
   Location,
   Contact,
+  getFile
 };
