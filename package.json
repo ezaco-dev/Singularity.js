@@ -26,7 +26,6 @@
     "type": "git",
     "url": "git+https://github.com/ezaco-dev/Singularity.js.git"
   },
-  "type": "module",
   "keywords": [
     "whatsapp-bot"
   ],
